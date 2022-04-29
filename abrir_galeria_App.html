@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>Carregar Imagem da Galeria</title>
+    
+</head>
+
+<body>
+    <input type="file" id="meu_upload"></input><br>
+    <img id="imagem" src="pesquisar.png" width="100px">
+</body>
+
+<script src="jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).on("change", "#meu_upload", function(e) {
+        showThumbnail(this.files);
+    });
+
+    function showThumbnail(files) {
+        if (files && files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+               imagem.src =  e.target.result;
+            }
+
+            reader.readAsDataURL(files[0]);
+        }
+    }
+</script>
+
+</html>

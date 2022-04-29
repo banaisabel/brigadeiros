@@ -1,0 +1,14 @@
+<button class="voltar" onclick="window.open('pagina2.html','_self')">  
+
+
+<div class="principal">
+        <img src="brigadeiro.png" width="150px">
+        <div class="titulo">Seja Bem-Vindo</div>
+    </div>
+    <a href="pagina3.html"><button class="pedido">
+        <img src="cupom.png">
+        <div class="meucupom">
+            <h2 class="noMargin">Meu Cupom</h2>
+            <h3 class="noMargin fontLight">Ver meus Descontos</h3>
+        </div>
+
