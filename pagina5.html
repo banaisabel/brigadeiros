@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pagina5</title>
+    <link rel="stylesheet" href="estilo.css">
+    <style>
+    .listagem{
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+        background-color:gainsboro;
+        width: 300px;
+        box-shadow: 1px 1px black;
+        padding: 10px;
+    }
+
+    .linha{
+        display: flex;
+        flex-direction: row;
+        
+    }
+    .codigo{
+        padding: 10px;
+        background-color: red;
+        width: 20px;
+        text-align: center;
+    }
+    .produto{
+        padding: 10px;
+        background-color: aqua;
+        width: 180px;
+        text-transform: uppercase;
+    }
+    .preco{
+        padding: 10px;
+        background-color: chartreuse;
+        width: 40px;
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <div class="principal2">
+        <img src="brigadeiro.png" width="120px">
+    </div>
+
+    QUANTIDADE:   <input type="text" id="codigo">  
+    <br> <br>
+    PRODUTO:   <input type="text" id="produto">  
+    <br> <br>
+    PREÇO:   <input type="text" id="preco" size="3"> 
+    <br> <br>
+    
+    <button onclick="Inserir();">
+        + INSERIR
+    </button>
+
+    <button onclick="Excluir();">
+        - EXCLUIR
+    </button>
+
+    <button onclick="Alterar();">
+        @ ALTERAR
+    </button>
+
+    <button onclick="Pesquisar();">
+        -> LISTAR
+    </button>
+
+    <br><br>
+
+<div id="listagem" class="listagem"></div>
+
+<div class="rodape" style="margin-top: 12px;">
+    <a href="pagina2.html" >
+        <img src="inicio.png" width="30px">
+    </a>
+    <a href="pagina4.html">
+        <img  src="buscar.png" width="30px">
+    </a>
+    <a href="pagina5.html">
+        <img src="pedidos.png" width="25px">
+    </a>
+    <a href="pagina4.html">
+        <img src="perfil.png" width="35px">
+    </a>
+</div>   
+</body>
+
+<script>
+
+    var variaveis = new URLSearchParams(location.search);
+    var log = variaveis.get('login'); // A variável log contém o login que veio da sua tela inicial.
+    console.log(log);
+
+// Se você estiver na tela inicial então insira a linha abaixo dentro da função do botão ENTRAR:
+
+// log = login.value;
+
+    // Criando a base de dados SENAI:
+    var db = openDatabase('SENAI2','v1.0','Base de pedidos',2*1024*1024);
+
+    // Criando as tabelas se não existirem
+    db.transaction(function(tx)
+    {
+        // Vá em INSPECIONAR >> Application -> WEB SQL
+        tx.executeSql('CREATE TABLE IF NOT EXISTS usuarios(login VARCHAR(20) PRIMARY KEY,senha VARCHAR(10), imagem TEXT)')
+    })
+
+    db.transaction(function(tx)
+    {
+        // Vá em INSPECIONAR >> Application -> WEB SQL
+        tx.executeSql('CREATE TABLE IF NOT EXISTS pedidos(cod INTEGER PRIMARY KEY AUTOINCREMENT,produto VARCHAR(20), preco DECIMAL)')
+    })
+
+
+
+    // Todos os seus arquivos precisam ter as linhas acima ! Elas servem para ler as tabelas em todas as telas do aplicativo 
+    // e também verificam qual é o login do usuário que está logado no sistema.
+    // Sempre que você desejar saber quem está logado, basta verificar a variável login.
+    // Quando quiser pular para outra tela você deve enviar que está logado, por exemplo, digite na sua tela inicial:
+
+    // window.open("tela2.html?login=" + log,"_self");
+
+    // No exemplo acima será aberto a tela2.html e o login será enviado na barra de endereço.
+
+
+
+
+
+
+    function Inserir()
+    {
+        db.transaction(function(tx)
+        {
+            tx.executeSql('INSERT INTO pedidos(produto,preco) VALUES(?,?)',[produto.value,preco.value])
+        })
+    }
+
+    function Excluir()
+    {
+        db.transaction(function(tx)
+        {
+            tx.executeSql('DELETE FROM pedidos WHERE cod=?',[codigo.value]);
+        })
+    }
+
+    function Alterar()
+    {
+        db.transaction(function(tx)
+        {
+            tx.executeSql('UPDATE pedidos SET produto=?,preco=? WHERE cod=?',[produto.value,preco.value,codigo.value]);
+        })
+        
+    }
+
+    function Pesquisar()
+    {
+       
+        
+        db.transaction(function(tx)
+        {
+            var consulta = 'SELECT * FROM pedidos';
+            tx.executeSql(consulta,[], function(tx,resultados)
+            {   
+                // Pegando o número de linhas retornado:
+                var linhas = resultados.rows.length;
+                if (linhas==0)
+                {
+                    alert("NÃO ENCONTRADO");
+                }
+               
+                var t = ""
+                var c = ""
+                var pro = ""
+                var pre = ""
+
+
+                 // Percorrendo cada linha:
+                for(i=0; i<linhas; i++)
+                {
+                    // Vamos pegar as colunas e jogar cada uma dentro de uma DIV:
+                     c = resultados.rows.item(i).cod
+                     pro = resultados.rows.item(i).produto
+                     pre = parseFloat(resultados.rows.item(i).preco);
+                     pre = (Math.round(pre * 100) / 100).toFixed(2);
+                     
+                    t = t + "<div class='linha'>"
+                    t = t + "<div class=codigo>" + c + "</div>"
+                    t = t + "<div class='produto'>" + pro + "</div>"
+                    t = t + "<div class='preco'>" + pre + "</div>"
+                    t = t + "</div>" 
+                }
+                listagem.innerHTML = t
+            });
+        })
+    }
+
+</script>
+
+</html>
